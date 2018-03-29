@@ -707,9 +707,9 @@
     };
 
 
-    $.imageSelectAreas = function() { };
+    $.BBDMarkerImage = function() { };
 
-    $.imageSelectAreas.prototype.init = function (object, customOptions) {
+    $.BBDMarkerImage.prototype.init = function (object, customOptions) {
         var that = this,
             defaultOptions = {
                 allowEdit: true,
@@ -837,7 +837,7 @@
         }
     };
 
-    $.imageSelectAreas.prototype._refresh = function () {
+    $.BBDMarkerImage.prototype._refresh = function () {
         var nbAreas = this.areas().length;
         this.$overlay.css({
             display : nbAreas? "block" : "none"
@@ -847,7 +847,7 @@
         });
     };
 
-    $.imageSelectAreas.prototype._eachArea = function (cb) {
+    $.BBDMarkerImage.prototype._eachArea = function (cb) {
         $.each(this._areas, function (id, area) {
             if (area) {
                 return cb(area, id);
@@ -855,18 +855,18 @@
         });
     };
 
-    $.imageSelectAreas.prototype._remove = function (id) {
+    $.BBDMarkerImage.prototype._remove = function (id) {
         delete this._areas[id];
         this._refresh();
     };
 
-    $.imageSelectAreas.prototype.remove = function (id) {
+    $.BBDMarkerImage.prototype.remove = function (id) {
         if (this._areas[id]) {
             this._areas[id].deleteSelection();
         }
     };
 
-    $.imageSelectAreas.prototype.newArea = function (event) {
+    $.BBDMarkerImage.prototype.newArea = function (event) {
         var id = -1;
         this.blurAll();
         if (this.options.maxAreas && this.options.maxAreas <=  this.areas().length) {
@@ -884,7 +884,7 @@
         return id;
     };
 
-    $.imageSelectAreas.prototype.set = function (id, options, silent) {
+    $.BBDMarkerImage.prototype.set = function (id, options, silent) {
         if (this._areas[id]) {
             options.id = id;
             this._areas[id].set(options, silent);
@@ -892,12 +892,12 @@
         }
     };
 
-    $.imageSelectAreas.prototype._add = function (options, silent) {
+    $.BBDMarkerImage.prototype._add = function (options, silent) {
         var id = this.newArea();
         this.set(id, options, silent);
     };
 
-    $.imageSelectAreas.prototype.add = function (options) {
+    $.BBDMarkerImage.prototype.add = function (options) {
         var that = this;
         this.blurAll();
         if ($.isArray(options)) {
@@ -913,7 +913,7 @@
         }
     };
 
-    $.imageSelectAreas.prototype.reset = function () {
+    $.BBDMarkerImage.prototype.reset = function () {
         var that = this;
         this._eachArea(function (area, id) {
             that.remove(id);
@@ -921,17 +921,17 @@
         this._refresh();
     };
 
-    $.imageSelectAreas.prototype.destroy = function () {
+    $.BBDMarkerImage.prototype.destroy = function () {
         this.reset();
         this.$holder.remove();
         this.$overlay.remove();
         this.$trigger.remove();
         this.$image.css("width", "").css("position", "").unwrap();
-        this.$image.removeData("mainImageSelectAreas");
+        this.$image.removeData("mainImage");
         this.$image.off("changing changed loaded");
     };
 
-    $.imageSelectAreas.prototype.areas = function () {
+    $.BBDMarkerImage.prototype.areas = function () {
         var ret = [];
         this._eachArea(function (area) {
             ret.push(area.getData());
@@ -939,7 +939,7 @@
         return ret;
     };
 
-    $.imageSelectAreas.prototype.relativeAreas = function () {
+    $.BBDMarkerImage.prototype.relativeAreas = function () {
         var areas = this.areas(),
             ret = [],
             ratio = this.ratio,
@@ -957,13 +957,13 @@
         return ret;
     };
 
-    $.imageSelectAreas.prototype.blurAll = function () {
+    $.BBDMarkerImage.prototype.blurAll = function () {
         this._eachArea(function (area) {
             area.blur();
         });
     };
 
-    $.imageSelectAreas.prototype.contains  = function (point) {
+    $.BBDMarkerImage.prototype.contains  = function (point) {
         var res = false;
         this._eachArea(function (area) {
             if (area.contains(point)) {
@@ -974,25 +974,25 @@
         return res;
     };
 
-    $.selectAreas = function(object, options) {
+    $.BBDMarker = function(object, options) {
         var $object = $(object);
-        if (!$object.data("mainImageSelectAreas")) {
-            var mainImageSelectAreas = new $.imageSelectAreas();
-            mainImageSelectAreas.init(object, options);
-            $object.data("mainImageSelectAreas", mainImageSelectAreas);
+        if (!$object.data("mainImage")) {
+            var mainImage = new $.BBDMarkerImage();
+            mainImage.init(object, options);
+            $object.data("mainImage", mainImage);
             $object.trigger("loaded");
         }
 
-        return $object.data("mainImageSelectAreas");
+        return $object.data("mainImage");
     };
 
-    $.fn.selectAreas = function(customOptions) {
-        if ($.imageSelectAreas.prototype[customOptions]) { // Method call
+    $.fn.BBDMarker = function(customOptions) {
+        if ($.BBDMarkerImage.prototype[customOptions]) { // Method call
             var ret =
-                $.imageSelectAreas
+                $.BBDMarkerImage
                     .prototype[customOptions]
                     .apply(
-                        $.selectAreas(this),
+                        $.BBDMarker(this),
                         Array.prototype.slice.call(arguments, 1)
                     );
 
@@ -1004,9 +1004,9 @@
                 var currentObject = this,
                     image = new Image();
 
-                // And attach selectAreas when the object is loaded
+                // And attach BBDMarker when the object is loaded
                 image.onload = function() {
-                    $.selectAreas(currentObject, customOptions);
+                    $.BBDMarker(currentObject, customOptions);
                 };
 
                 // Reset the src because cached images don"t fire load sometimes
@@ -1015,7 +1015,7 @@
 
             return this;
         } else {
-            $.error("Method " +  customOptions + " does not exist on jQuery.selectAreas");
+            $.error("Method " +  customOptions + " does not exist on jQuery.BBDMarker");
         }
     };
 })(jQuery);
