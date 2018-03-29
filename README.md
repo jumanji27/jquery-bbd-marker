@@ -63,7 +63,7 @@ Here is a list of available options for BBDMarker, with their *default value*:
  - **allowDelete** (*true*) : When set to false, Areas can not be deleted.
  - **allowNudge** (*true*) : When set to false, Areas can not be moved with arrow keys.
  - **aspectRatio** (*0*) : When not 0, force a ratio between height and width for the selections.
- - **minSize** (*[0, 0]*) : When not 0, set the minimum size for a selection [width, height]
+ - **minSize** (*[40, 40]*) : When not 0, set the minimum size for a selection [width, height]
  - **maxSize** (*[0, 0]*) : When not 0, set the maximum size for a selection [width, height]
  - **maxAreas** (*0*) : When not 0, set the maximum number of area that can be drawn.
  - **outlineOpacity** (*0.5*) : opacity of the moving dotted outline around a selection.
