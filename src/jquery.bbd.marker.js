@@ -50,7 +50,7 @@
                     on(val);
                 });
             },
-            on = function (type, handler, params) {
+            on = function (type, handler) {
                 var browserEvent, mobileEvent;
                 switch (type) {
                     case "start":
@@ -70,13 +70,7 @@
                 }
 
                 if (handler && jQuery.isFunction(handler)) {
-                    $(window.document)
-                        .on(browserEvent, function(event) {
-                            handler(event, params);
-                        })
-                        .on(mobileEvent, function(event) {
-                            handler(event, params);
-                        })
+                    $(window.document).on(browserEvent, handler).on(mobileEvent, handler)
                 } else {
                     $(window.document).off(browserEvent).off(mobileEvent);
                 }
@@ -255,7 +249,7 @@
 
                 focus();
 
-                on("move", resizeSelection, {init: true});
+                on("move", resizeSelection);
                 on("stop", releaseSelection);
 
                 // Get the selection origin
@@ -327,7 +321,7 @@
 
                 refresh("pickResizeHandler");
             },
-            resizeSelection = function (event, params) {
+            resizeSelection = function (event) {
                 cancelEvent(event);
                 focus();
 
@@ -437,10 +431,7 @@
                     area.y = selectionOrigin[1];
                 }
 
-                if (params && params.init) {
-                    area.dot.x = area.width / 2;
-                    area.dot.y = area.height / 2;
-                } else {
+                if (area.dot.touched) {
                     if (selectionOrigin[0] === area.x) {
                         if (area.dot.x > area.width) area.dot.x = area.width;
                     } else {
@@ -472,6 +463,9 @@
                             area.dot.y = area.dot.y - diff
                         }
                     }
+                } else {
+                    area.dot.x = area.width / 2;
+                    area.dot.y = area.height / 2;
                 }
 
                 fireEvent("changing");
@@ -614,7 +608,6 @@
                 return [x, y];
             };
 
-
         // Initialize an outline layer and place it above the trigger layer
         $outline = $("<div class=\"select-areas-outline\" />")
             .css({
@@ -709,11 +702,16 @@
                 fireEvent("changed");
             },
             set: function (dimensions, silent) {
-               if (!dimensions.dot) {
+                if (dimensions.dot) {
+                    dimensions.dot.touched = true;
+
+                    $selection.children(".dot-area").css({
+                        opacity: 1
+                    });
+                } else {
                     dimensions.dot = {
                         x: dimensions.width / 2,
-                        y: dimensions.height / 2,
-                        touched: true
+                        y: dimensions.height / 2
                     }
                 }
 
@@ -721,10 +719,6 @@
 
                 selectionOrigin[0] = area.x;
                 selectionOrigin[1] = area.y;
-
-                $selection.children(".dot-area").css({
-                    opacity: 1
-                });
 
                 if (!silent) fireEvent("changed");
             },
