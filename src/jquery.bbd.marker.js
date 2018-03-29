@@ -21,8 +21,7 @@
                 dot: {
                     x: 0,
                     y: 0,
-                    height: 16,
-                    width: 16
+                    touched: false
                 }
             },
             blur = function () {
@@ -88,8 +87,7 @@
                 if (type === "dot") {
                     $selection.children(".dot-area").css({
                         top: area.dot.y,
-                        left: area.dot.x,
-                        opacity: 1
+                        left: area.dot.x
                     });
 
                     return;
@@ -115,6 +113,21 @@
                     top : area.y,
                     "z-index": area.z + 2
                 });
+
+                // Update delete button
+                CONSTRAINT = 20
+
+                if (area.y < CONSTRAINT || $image.width() - (area.x + area.width) < CONSTRAINT) {
+                    $btDelete.children(".select-areas-delete-area").css({
+                        color: '#000',
+                        border: '1px solid #000'
+                    });
+                } else {
+                    $btDelete.children(".select-areas-delete-area").css({
+                        color: '#fff',
+                        border: '1px solid #fff'
+                    });
+                }
 
                 // Update the dot
                 $selection.children(".dot-area").css({
@@ -240,7 +253,9 @@
                 // Reset the selection size
                 area.width = options.minSize[0];
                 area.height = options.minSize[1];
+
                 focus();
+
                 on("move", resizeSelection, {init: true});
                 on("stop", releaseSelection);
 
@@ -278,6 +293,13 @@
             pickDotSelection = function(event) {
                 cancelEvent(event);
                 focus();
+
+                area.dot.touched = true;
+
+                $selection.children(".dot-area").css({
+                    opacity: 1
+                });
+
                 on("move", moveDotSelection);
                 on("stop", releaseSelection);
             },
@@ -457,12 +479,13 @@
             },
             moveSelection = function (event) {
                 cancelEvent(event);
-                if (!options.allowMove) {
-                    return;
-                }
+
+                if (!options.allowMove) return;
+
                 focus();
 
                 var mousePosition = getMousePosition(event);
+
                 moveTo({
                     x: mousePosition[0] - selectionOffset[0],
                     y: mousePosition[1] - selectionOffset[1]
@@ -472,12 +495,13 @@
             },
             moveDotSelection = function (event) {
                 cancelEvent(event);
-                if (!options.allowDotMove) {
-                    return;
-                }
+
+                if (!options.allowDotMove) return;
+
                 focus();
 
                 var mousePosition = getMousePosition(event);
+
                 moveDotTo({
                     x: mousePosition[0] - area.x,
                     y: mousePosition[1] - area.y
@@ -686,7 +710,8 @@
                if (!dimensions.dot) {
                     dimensions.dot = {
                         x: dimensions.width / 2,
-                        y: dimensions.height / 2
+                        y: dimensions.height / 2,
+                        touched: false
                     }
                 }
 
