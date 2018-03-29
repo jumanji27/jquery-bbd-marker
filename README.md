@@ -6,7 +6,7 @@ Based on [jQuery-select-areas](https://github.com/360Learning/jquery-select-area
 jQuery-bbd-marker is a jQuery plugin that let you select multiple areas of an image with dot,
 move them and resize them.
 
-![jQuery-bbd-marker Preview](https://rawgit.com/360Learning/jquery-select-areas/master/jQuerySelectAreas-Preview.png)
+![jQuery-bbd-marker Preview](https://raw.githubusercontent.com/jumanji27/jquery-bbd-marker/master/promo.jpg)
 
 # Project continuation
 
