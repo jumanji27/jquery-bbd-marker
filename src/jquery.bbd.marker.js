@@ -20,8 +20,7 @@
                 width: 0,
                 dot: {
                     x: 0,
-                    y: 0,
-                    touched: false
+                    y: 0
                 }
             },
             blur = function () {
@@ -279,6 +278,7 @@
             pickSelection = function (event) {
                 cancelEvent(event);
                 focus();
+
                 on("move", moveSelection);
                 on("stop", releaseSelection);
 
@@ -703,7 +703,9 @@
                 if (point.r) {
                     point.x = area.x + point.r;
                 }
+
                 moveTo(point);
+
                 fireEvent("changed");
             },
             set: function (dimensions, silent) {
@@ -711,7 +713,7 @@
                     dimensions.dot = {
                         x: dimensions.width / 2,
                         y: dimensions.height / 2,
-                        touched: false
+                        touched: true
                     }
                 }
 
@@ -720,9 +722,11 @@
                 selectionOrigin[0] = area.x;
                 selectionOrigin[1] = area.y;
 
-                if (!silent) {
-                    fireEvent("changed");
-                }
+                $selection.children(".dot-area").css({
+                    opacity: 1
+                });
+
+                if (!silent) fireEvent("changed");
             },
             contains: function (point) {
                 return (point.x >= area.x) && (point.x <= area.x + area.width) &&
