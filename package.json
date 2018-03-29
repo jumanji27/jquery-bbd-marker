@@ -4,5 +4,6 @@
   "description": "jQuery plugin for marking ML images via bounding boxes with dot",
   "dependencies": {
     "jquery": "3.3.1"
-  }
+  },
+  "main": "jquery.bbd.marker.js"
 }
