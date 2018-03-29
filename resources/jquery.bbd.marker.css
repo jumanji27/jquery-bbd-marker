@@ -1,0 +1,46 @@
+.select-areas-overlay {
+	background-color: #000;
+	overflow: hidden;
+	position: absolute;
+}
+
+.select-areas-outline {
+	outline: 2px solid #fff;
+	overflow: hidden;
+}
+
+.select-areas-resize-handler {
+	opacity: 0.8;
+	background-color: #fff;
+	border: 1px #fff solid;
+	height: 8px;
+	width: 8px;
+	overflow: hidden;
+}
+
+.select-areas-resize-handler:hover {
+	opacity: 1;
+}
+
+.select-areas-delete-area {
+	opacity: 0.8;
+	cursor: pointer;
+	height: 16px;
+	width: 16px;
+	border: 1px solid #fff;
+	text-align: center;
+	color: #fff;
+	font-size: 11px;
+	line-height: 15px;
+	border-radius: 10px;
+}
+
+.select-areas-delete-area:hover {
+	opacity: 1;
+}
+
+.delete-area {
+	position: absolute;
+	cursor: pointer;
+	padding: 5px;
+}
