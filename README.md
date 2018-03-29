@@ -1,14 +1,12 @@
 jQuery Bounding Boxes with Dot Marker
 ===================
 
-Based on [jQuery-select-areas](https://github.com/360Learning/jquery-select-areas) by [360learning](https://360learning.com) and have very similar params and integration.
-
-jQuery-bbd-marker is a jQuery plugin that let you select multiple areas of an image with dot,
-move them and resize them.
+*Based on [jQuery-select-areas](https://github.com/360Learning/jquery-select-areas) by [360learning](https://360learning.com) and have very similar params and integration.*
 
 ![jQuery-bbd-marker Preview](https://raw.githubusercontent.com/jumanji27/jquery-bbd-marker/master/promo.jpg)
 
-# Project continuation
+jQuery-bbd-marker is a jQuery plugin that let you select multiple areas of an image with dot,
+move them and resize them.
 
 # Quick Start
 
@@ -20,7 +18,7 @@ move them and resize them.
       onChanged: $.noop,    // Fired when a selection is released
       onChanging: $.noop,   // Fired during the modification of a selection
       areas: [ ... ]        // Predifined areas, see below
-      // And many others, see example/example.html
+      // And many others params, see example/example.html
     });
 
 
@@ -31,7 +29,7 @@ see *example/example.html*
 This plugin is fully compatible with every modern browser and IE >= 9.
 
 One of the features : scaling image, in order to display it smaller or bigger than it actually is, is not compatible with IE8.
-If you need to use this feature and to maintain a compatibility with IE8, you can add the alternate stylesheet *resources/jquery.selectareas.ie8.css*.
+If you need to use this feature and to maintain a compatibility with IE8, you can add the alternate stylesheet *src/jquery.bbd.marker.ie8.css*.
 This will make it work but uglify the whole plugin. This stylesheet can be added for IE8 only with conditional comments (see *example/example.html*).
 
 # API Doc
