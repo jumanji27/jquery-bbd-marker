@@ -1,9 +1,7 @@
 {
   "name": "jquery-bbd-marker",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "jQuery plugin for marking ML images via bounding boxes with dot",
-  "dependencies": {
-    "jquery": "3.3.1"
-  },
-  "main": "jquery.bbd.marker.js"
+  "main": "dist/jquery.bbd.marker.min.js"
 }
