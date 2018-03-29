@@ -1,18 +1,14 @@
-jQuery-select-areas
+jQuery Bounding Boxes with Dot Marker
 ===================
 
-jQuery-select-areas is a jQuery plugin that let you select multiple areas of an image,
+Based on [jQuery-select-areas](https://github.com/360Learning/jquery-select-areas) by [360learning](https://360learning.com) and have very similar params and integration.
+
+jQuery-bbd-marker is a jQuery plugin that let you select multiple areas of an image with dot,
 move them and resize them.
 
-It is used by:
- - [360learning](https://360learning.com)
-
-![jQuery-select-areas Preview](https://rawgit.com/360Learning/jquery-select-areas/master/jQuerySelectAreas-Preview.png)
+![jQuery-bbd-marker Preview](https://rawgit.com/360Learning/jquery-select-areas/master/jQuerySelectAreas-Preview.png)
 
 # Project continuation
-
-We (360Learning) no longer have the time to maintain this project, so the issue tracker has been closed. If someone wants to get admin access to this repository to fix the few bugs that are reported, we would gladly agree. Else, there already are some forks of this project, so don't hesitate to use them if they have fixed a bug that is bother you.
-Best regards
 
 # Quick Start
 
@@ -21,13 +17,15 @@ Best regards
     $("#mypic").BBDMarker({
       minSize: [30, 30],    // Minimum size of a selection
       maxSize: [400, 300],  // Maximum size of a selection
-      onChanged: $.noop,    // fired when a selection is released
-      onChanging: $.noop    // fired during the modification of a selection
+      onChanged: $.noop,    // Fired when a selection is released
+      onChanging: $.noop,   // Fired during the modification of a selection
+      areas: [ ... ]        // Predifined areas, see below
+      // And many others, see example/example.html
     });
 
 
 ## Want an example to learn from?
-Check out [example/example.html](https://rawgit.com/360Learning/jquery-select-areas/master/example/example.html)
+see *example/example.html*
 
 ## Browser Compatibiilty:
 This plugin is fully compatible with every modern browser and IE >= 9.
@@ -47,7 +45,12 @@ An area is described (when retrieved or set) by a json object:
         y,  // Y coordinate (Position)
         z,  // Z-index (0 when inactive or 100 when focused)
         width,  // Width of the area (Size)
-        height  // Height of the area (Size)
+        height,  // Height of the area (Size)
+        dot: { // dot
+          x, // X coordinate relatively bounding box (area)
+          y, // Y coordinate relatively bounding box (area)
+          touched // will be true if dot is already changed position
+        }
     }
 
 ## Options
@@ -55,6 +58,8 @@ Here is a list of available options for BBDMarker, with their *default value*:
 
  - **allowEdit** (*true*) : When set to false, unset allowMove, allowResize, allowSelect and allowDelete
  - **allowMove** (*true*) : When set to false, Areas can not be moved with a drag & drop.
+ - **allowDot** (*true*) : When set to false, Area will be without the dot.
+ - **allowDotMove** (*true*) : When to false, dot can not be moved.
  - **allowResize** (*true*) : When set to false, Areas can not be resized.
  - **allowSelect** (*true*) : When set to false, Areas can not be created.
  - **allowDelete** (*true*) : When set to false, Areas can not be deleted.
