@@ -3,7 +3,7 @@ jQuery Bounding Boxes with Dot Marker
 
 *Based on [jQuery-select-areas](https://github.com/360Learning/jquery-select-areas) by [360learning](https://360learning.com) and have very similar params and integration.*
 
-![jQuery-bbd-marker Preview](https://raw.githubusercontent.com/jumanji27/jquery-bbd-marker/master/promo.jpg)
+![jQuery-bbd-marker Preview](https://raw.githubusercontent.com/jumanji27/jquery-bbd-marker/master/bbd-promo.jpg)
 
 jQuery-bbd-marker is a jQuery plugin that let you select multiple areas of an image with dot,
 move them and resize them.
