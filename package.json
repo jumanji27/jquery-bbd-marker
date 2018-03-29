@@ -3,5 +3,5 @@
   "version": "1.0.0",
   "license": "MIT",
   "description": "jQuery plugin for marking ML images via bounding boxes with dot",
-  "main": "dist/jquery.bbd.marker.min.js"
+  "main": "src/jquery.bbd.marker.min.js"
 }
