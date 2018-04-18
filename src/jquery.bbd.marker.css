@@ -22,27 +22,48 @@
 	opacity: 1;
 }
 
-.select-areas-delete-area {
+.select-areas-settings-icon-area {
 	opacity: 0.8;
 	cursor: pointer;
-	height: 16px;
-	width: 16px;
-	border: 1px solid #fff;
-	text-align: center;
-	color: #fff;
-	font-size: 11px;
-	line-height: 15px;
-	border-radius: 10px;
+	font-size: 20px;
+	padding-left: 3px;
 }
 
-.select-areas-delete-area:hover {
+.select-areas-settings-icon-area:hover {
 	opacity: 1;
 }
 
-.delete-area {
+.settings-area {
 	position: absolute;
 	cursor: pointer;
-	padding: 5px;
+}
+
+.settings-area.disable .select-areas-settings-area-delete,
+.settings-area.disable .select-areas-settings-area-disable-frame,
+.select-areas-settings-area-delete.disable,
+.select-areas-settings-area-disable-frame.disable {
+	display: none;
+}
+
+.settings-area:not(.disable) div {
+	background: #fff;
+	opacity: 0.8;
+	margin-top: 1px;
+	white-space: pre;
+	padding: 3px 5px;
+}
+
+.settings-area:not(.disable) div:first-child {
+	margin-top: 0;
+}
+
+.settings-area:not(.disable) div:hover {
+	opacity: 1;
+}
+
+
+.settings-area:not(.disable) .select-areas-settings-icon-area {
+	display: none;
 }
 
 .select-areas-background-area {

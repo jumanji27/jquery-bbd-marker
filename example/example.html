@@ -10,7 +10,7 @@
 		<script src="../src/jquery.bbd.marker.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			$(document).ready(function () {
-				$('img#example').BBDMarker({
+				$("img#example").BBDMarker({
 					width: 500,
 					areas: [
 						{
@@ -19,47 +19,48 @@
 							width: 60,
 							height: 100
 						}
-					]
+					],
+					settingTexts: ["Удалить", "Удалить рамку"]
 				});
-				$('#btnView').click(function () {
-					var areas = $('img#example').BBDMarker('areas');
+				$("#btnView").click(function () {
+					var areas = $("img#example").BBDMarker("getAreas");
 					displayAreas(areas);
 				});
-				$('#btnViewRel').click(function () {
-					var areas = $('img#example').BBDMarker('relativeAreas');
+				$("#btnViewRel").click(function () {
+					var areas = $("img#example").BBDMarker("getRelativeAreas");
 					displayAreas(areas);
 				});
-				$('#btnReset').click(function () {
+				$("#btnReset").click(function () {
 					output("reset")
-					$('img#example').BBDMarker('reset');
+					$("img#example").BBDMarker("reset");
 				});
-				$('#btnDestroy').click(function () {
-					$('img#example').BBDMarker('destroy');
+				$("#btnDestroy").click(function () {
+					$("img#example").BBDMarker("destroy");
 
 					output("destroyed")
-					$('.actionOn').attr("disabled", "disabled");
-					$('.actionOff').removeAttr("disabled")
+					$(".actionOn").attr("disabled", "disabled");
+					$(".actionOff").removeAttr("disabled")
 				});
-				$('#btnCreate').attr("disabled", "disabled").click(function () {
-					$('img#example').BBDMarker({
+				$("#btnCreate").attr("disabled", "disabled").click(function () {
+					$("img#example").BBDMarker({
 						minSize: [10, 10],
 						width: 500
 					});
 
 					output("created")
-					$('.actionOff').attr("disabled", "disabled");
-					$('.actionOn').removeAttr("disabled")
+					$(".actionOff").attr("disabled", "disabled");
+					$(".actionOn").removeAttr("disabled")
 				});
-				$('#btnNew').click(function () {
+				$("#btnNew").click(function () {
 					var areaOptions = {
 						x: Math.floor((Math.random() * 200)),
 						y: Math.floor((Math.random() * 200)),
 						width: Math.floor((Math.random() * 100)) + 50,
 						height: Math.floor((Math.random() * 100)) + 20,
 					};
-					$('img#example').BBDMarker('add', areaOptions);
+					$("img#example").BBDMarker("add", areaOptions);
 				});
-				$('#btnNews').click(function () {
+				$("#btnNews").click(function () {
 					var areaOption1 = {
 						x: Math.floor((Math.random() * 200)),
 						y: Math.floor((Math.random() * 200)),
@@ -71,18 +72,22 @@
 						width: 50,
 						height: 20,
 					};
-					$('img#example').BBDMarker('add', [areaOption1, areaOption2]);
+					$("img#example").BBDMarker("add", [areaOption1, areaOption2]);
 				});
 			});
 
 			var selectionExists;
 
 			function areaToString (area) {
-				return (typeof area.id === "undefined" ? "" : (area.id + ": ")) + area.x + ':' + area.y  + ' ' + area.width + 'x' + area.height + ' ' + area.dot.x + ':' + area.dot.y + '<br />'
+				if (!area.x) {
+					return (typeof area.id === "undefined" ? "" : (area.id + ": ")) + area.dot.x + ":" + area.dot.y + "<br />"
+				}
+
+				return (typeof area.id === "undefined" ? "" : (area.id + ": ")) + area.x + ":" + area.y  + " " + area.width + "x" + area.height + " " + area.dot.x + ":" + area.dot.y + "<br />"
 			}
 
 			function output (text) {
-				$('#output').html(text);
+				$("#output").html(text);
 			}
 
 			// Display areas coordinates in a div
@@ -116,7 +121,7 @@
 						<input type="button" id="btnCreate" value="Create" class="actionOff" />
 					</td>
 					<td>
-						<div id="output" class='output'> </div>
+						<div id="output" class="output"> </div>
 					</td>
 				</tr>
 			</table>

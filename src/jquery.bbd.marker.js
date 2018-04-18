@@ -1,44 +1,37 @@
 (function($) {
     $.imageArea = function(parent, id) {
         var options = parent.options,
+            $controls,
             $image = parent.$image,
             $trigger = parent.$trigger,
             $outline,
             $selection,
             $resizeHandlers = {},
-            $btDelete,
+            $btSettings,
             resizeHorizontally = true,
             resizeVertically = true,
             selectionOffset = [0, 0],
             selectionOrigin = [0, 0],
             area = {
                 id: id,
-                x: 0,
-                y: 0,
-                z: 0,
-                height: 0,
-                width: 0,
-                dot: {
-                    x: 0,
-                    y: 0
-                }
+                dot: {}
             },
-            blur = function () {
+            blur = function() {
                 area.z = 0;
                 refresh("blur");
             },
-            focus = function () {
+            focus = function() {
                 parent.blurAll();
                 area.z = 100;
                 refresh();
             },
-            getData = function () {
+            getData = function() {
                 return area;
             },
-            fireEvent = function (event) {
+            fireEvent = function(event) {
                 $image.trigger(event, [area.id, parent.areas()]);
             },
-            cancelEvent = function (e) {
+            cancelEvent = function(e) {
                 var event = e || window.event || {};
                 event.cancelBubble = true;
                 event.returnValue = false;
@@ -46,11 +39,11 @@
                 event.preventDefault && event.preventDefault();
             },
             off = function() {
-                $.each(arguments, function (key, val) {
+                $.each(arguments, function(key, val) {
                     on(val);
                 });
             },
-            on = function (type, handler) {
+            on = function(type, handler) {
                 var browserEvent, mobileEvent;
                 switch (type) {
                     case "start":
@@ -75,7 +68,7 @@
                     $(window.document).off(browserEvent).off(mobileEvent);
                 }
             },
-            updateSelection = function (type) {
+            updateSelection = function(type) {
                 // Update the dot only
                 if (type === "dot") {
                     $selection.children(".dot-area").css({
@@ -107,28 +100,12 @@
                     "z-index": area.z + 2
                 });
 
-                // Update delete button
-                CONSTRAINT = 20
-
-                if (area.y < CONSTRAINT || $image.width() - (area.x + area.width) < CONSTRAINT) {
-                    $btDelete.children(".select-areas-delete-area").css({
-                        color: '#000',
-                        border: '1px solid #000'
-                    });
-                } else {
-                    $btDelete.children(".select-areas-delete-area").css({
-                        color: '#fff',
-                        border: '1px solid #fff'
-                    });
-                }
-
-                // Update the dot
                 $selection.children(".dot-area").css({
                     top: area.dot.y,
                     left: area.dot.x
                 });
             },
-            updateResizeHandlers = function (show) {
+            updateResizeHandlers = function(show) {
                 if (!options.allowResize) {
                     return;
                 }
@@ -143,20 +120,16 @@
 
                         if (vertical === "n") {             // North
                             top = - semiheight;
-
                         } else if (vertical === "s") {      // South
                             top = area.height - semiheight - 1;
-
                         } else {                            // East & West
                             top = Math.round(area.height / 2) - semiheight - 1;
                         }
 
                         if (horizontal === "e") {           // East
                             left = area.width - semiwidth - 1;
-
                         } else if (horizontal === "w") {    // West
                             left = - semiwidth;
-
                         } else {                            // North & South
                             left = Math.round(area.width / 2) - semiwidth - 1;
                         }
@@ -174,17 +147,21 @@
                     });
                 }
             },
-            updateBtDelete = function (visible) {
-                if ($btDelete) {
-                    $btDelete.css({
+            updatebtSettings = function(visible) {
+                if ($btSettings) {
+                    var addition = 0;
+
+                    if (area.frameDisabled) addition = 5;
+
+                    $btSettings.css({
                         display: visible ? "block" : "none",
-                        left: area.x + area.width + 1,
-                        top: area.y - $btDelete.outerHeight() - 1,
+                        left: area.x + area.width + addition,
+                        top: area.y - $btSettings.outerHeight() - addition,
                         "z-index": area.z + 1
                     });
                 }
             },
-            updateCursor = function (cursorType) {
+            updateCursor = function(cursorType) {
                 $outline.css({
                     cursor: cursorType
                 });
@@ -199,7 +176,7 @@
                         parent._refresh();
                         updateSelection();
                         updateResizeHandlers();
-                        updateBtDelete(true);
+                        updatebtSettings(true);
                         break;
 
                     case "pickSelection":
@@ -211,20 +188,20 @@
                         updateSelection();
                         updateResizeHandlers();
                         updateCursor("crosshair");
-                        updateBtDelete(true);
+                        updatebtSettings(true);
                         break;
 
                     case "moveSelection":
                         updateSelection();
                         updateResizeHandlers();
                         updateCursor("move");
-                        updateBtDelete(true);
+                        updatebtSettings(true);
                         break;
 
                     case "blur":
                         updateSelection();
                         updateResizeHandlers();
-                        updateBtDelete();
+                        updatebtSettings();
                         break;
 
                     case "moveDotSelection":
@@ -234,13 +211,17 @@
                     case "pickDotSelection":
                         break;
 
+                    case "updatebtSettings":
+                        updatebtSettings(true);
+                        break;
+
                     default:
                         updateSelection();
                         updateResizeHandlers(true);
-                        updateBtDelete(true);
+                        updatebtSettings(true);
                 }
             },
-            startSelection  = function (event) {
+            startSelection  = function(event) {
                 cancelEvent(event);
 
                 // Reset the selection size
@@ -269,7 +250,7 @@
 
                 refresh("startSelection");
             },
-            pickSelection = function (event) {
+            pickSelection = function(event) {
                 cancelEvent(event);
                 focus();
 
@@ -297,7 +278,7 @@
                 on("move", moveDotSelection);
                 on("stop", releaseSelection);
             },
-            pickResizeHandler = function (event) {
+            pickResizeHandler = function(event) {
                 cancelEvent(event);
                 focus();
 
@@ -321,7 +302,7 @@
 
                 refresh("pickResizeHandler");
             },
-            resizeSelection = function (event) {
+            resizeSelection = function(event) {
                 cancelEvent(event);
                 focus();
 
@@ -471,7 +452,7 @@
                 fireEvent("changing");
                 refresh("resizeSelection");
             },
-            moveSelection = function (event) {
+            moveSelection = function(event) {
                 cancelEvent(event);
 
                 if (!options.allowMove) return;
@@ -487,7 +468,7 @@
 
                 fireEvent("changing");
             },
-            moveDotSelection = function (event) {
+            moveDotSelection = function(event) {
                 cancelEvent(event);
 
                 if (!options.allowDotMove) return;
@@ -496,14 +477,21 @@
 
                 var mousePosition = getMousePosition(event);
 
-                moveDotTo({
-                    x: mousePosition[0] - area.x,
-                    y: mousePosition[1] - area.y
-                });
+                if (area.frameDisabled) {
+                    moveTo({
+                        x: mousePosition[0],
+                        y: mousePosition[1]
+                    });
+                } else {
+                    moveDotTo({
+                        x: mousePosition[0] - area.x,
+                        y: mousePosition[1] - area.y
+                    });
+                }
 
                 fireEvent("changing");
             },
-            moveTo = function (point) {
+            moveTo = function(point) {
                 // Set the selection position on the x-axis relative to the bounds
                 // of the image
                 if (point.x > 0) {
@@ -528,7 +516,7 @@
                 }
                 refresh("moveSelection");
             },
-            moveDotTo = function (point) {
+            moveDotTo = function(point) {
                 if (point.x > 0) {
                     if (point.x < area.width) {
                         area.dot.x = point.x;
@@ -550,7 +538,7 @@
 
                 refresh("moveDotSelection");
             },
-            releaseSelection = function (event, type) {
+            releaseSelection = function(event, type) {
                 cancelEvent(event);
                 off("move", "stop");
 
@@ -565,25 +553,63 @@
                 fireEvent("changed");
                 refresh("releaseSelection");
             },
-            deleteSelection = function (event) {
+            openSettings = function() {
+                $btSettings.removeClass("disable");
+
+                refresh("updatebtSettings");
+            },
+            deleteSelection = function(event) {
                 cancelEvent(event);
                 $selection.remove();
                 $outline.remove();
                 $.each($resizeHandlers, function(card, $handler) {
                     $handler.remove();
                 });
-                if ($btDelete) {
-                    $btDelete.remove();
+                if ($btSettings) {
+                    $btSettings.remove();
                 }
                 parent._remove(id);
                 fireEvent("changed");
             },
-            getElementOffset = function (object) {
+            deleteFrame = function() {
+                area.x = area.x + area.dot.x;
+                area.y = area.y + area.dot.y;
+
+                area.width = 0;
+                area.height = 0;
+
+                area.dot.x = 0;
+                area.dot.y = 0;
+
+                $outline.remove();
+
+                $.each($resizeHandlers, function(_, $handler) {
+                    $handler.remove();
+                });
+
+                area.dot.touched = true;
+
+                $selection.children(".dot-area").css({
+                    opacity: 1
+                });
+
+                if ($btSettings) {
+                    $btSettings
+                        .children(".select-areas-settings-area-disable-frame")
+                        .addClass("disable");
+                    $btSettings.addClass("disable");
+                }
+
+                area.frameDisabled = true;
+
+                refresh();
+            },
+            getElementOffset = function(object) {
                 var offset = $(object).offset();
 
                 return [offset.left, offset.top];
             },
-            getMousePosition = function (event) {
+            getMousePosition = function(event) {
                 var imageOffset = getElementOffset($image);
 
                 if (!event.pageX) {
@@ -609,7 +635,7 @@
             };
 
         // Initialize an outline layer and place it above the trigger layer
-        $outline = $("<div class=\"select-areas-outline\" />")
+        $outline = $("<div class='select-areas-outline' />")
             .css({
                 opacity : options.outlineOpacity,
                 position : "absolute"
@@ -628,9 +654,9 @@
 
         // Initialize all handlers
         if (options.allowResize) {
-            $.each(["nw", "n", "ne", "e", "se", "s", "sw", "w"], function (key, card) {
+            $.each(["nw", "n", "ne", "e", "se", "s", "sw", "w"], function(key, card) {
                 $resizeHandlers[card] =
-                    $("<div class=\"select-areas-resize-handler " + card + "\"/>")
+                    $("<div class='select-areas-resize-handler " + card + "'/>")
                         .css({
                             position : "absolute",
                             cursor : card + "-resize"
@@ -641,30 +667,67 @@
             });
         }
 
-        // initialize delete button
-        if (options.allowDelete) {
-            var bindToDelete = function ($obj) {
+        // initialize settings button
+        if (options.allowSettings) {
+            var bindToSettings = function($obj) {
+                $obj.click(openSettings)
+                    .bind("touchstart", openSettings)
+                    .bind("tap", openSettings);
+                return $obj;
+            };
+            $btSettings = $("<div class='settings-area disable' />")
+                .append(
+                    bindToSettings(
+                        $("<div class='select-areas-settings-icon-area'>&#9881;</div>")
+                    )
+                );
+
+            var bindToDelete = function($obj) {
                 $obj.click(deleteSelection)
                     .bind("touchstart", deleteSelection)
                     .bind("tap", deleteSelection);
                 return $obj;
             };
-            $btDelete = bindToDelete($("<div class=\"delete-area\" />"))
-                .append(bindToDelete($("<div class=\"select-areas-delete-area\">✕</div>")))
-                .insertAfter($selection);
+            $btSettings.append(
+                bindToDelete(
+                    $(
+                        "<div class='select-areas-settings-area-delete'>" +
+                            options.settingTexts[0] +
+                        "</div>"
+                    )
+                )
+            );
+
+            var bindTodeleteFrame = function($obj) {
+                $obj.click(deleteFrame)
+                    .bind("touchstart", deleteFrame)
+                    .bind("tap", deleteFrame);
+                return $obj;
+            };
+            $btSettings
+                .append(
+                    bindTodeleteFrame(
+                        $(
+                            "<div class='select-areas-settings-area-disable-frame'>" +
+                                options.settingTexts[1] +
+                            "</div>"
+                        )
+                    )
+                )
+                .insertAfter($selection);;
         }
 
         // Initialize the dot
         if (options.allowDot) {
-            var bindToDot = function ($obj) {
+            var bindToDot = function($obj) {
                 $obj.mousedown(pickDotSelection).bind("touchstart", pickDotSelection);
 
                 return $obj;
             };
 
             $selection.append(
-                bindToDot($("<div class=\"dot-area\" />"))
-                    .append(bindToDot($("<div class=\"select-areas-dot-area\" />")))
+                bindToDot($("<div class='dot-area' />"))
+                    .append(bindToDot($("<div class='select-areas-dot-area' />")))
             );
         }
 
@@ -677,11 +740,13 @@
         return {
             getData: getData,
             startSelection: startSelection,
+            openSettings: openSettings,
             deleteSelection: deleteSelection,
+            deleteFrame: deleteFrame,
             options: options,
             blur: blur,
             focus: focus,
-            nudge: function (point) {
+            nudge: function(point) {
                 point.x = area.x;
                 point.y = area.y;
                 if (point.d) {
@@ -701,7 +766,7 @@
 
                 fireEvent("changed");
             },
-            set: function (dimensions, silent) {
+            set: function(dimensions, silent) {
                 if (dimensions.dot) {
                     dimensions.dot.touched = true;
 
@@ -722,7 +787,7 @@
 
                 if (!silent) fireEvent("changed");
             },
-            contains: function (point) {
+            contains: function(point) {
                 return (point.x >= area.x) && (point.x <= area.x + area.width) &&
                        (point.y >= area.y) && (point.y <= area.y + area.height);
             }
@@ -732,7 +797,7 @@
 
     $.BBDMarkerImage = function() { };
 
-    $.BBDMarkerImage.prototype.init = function (object, customOptions) {
+    $.BBDMarkerImage.prototype.init = function(object, customOptions) {
         var that = this,
             defaultOptions = {
                 allowEdit: true,
@@ -740,11 +805,11 @@
                 allowDotMove: true,
                 allowResize: true,
                 allowSelect: true,
-                allowDelete: true,
+                allowSettings: true,
                 allowDot: true,
                 allowNudge: true,
                 aspectRatio: 0,
-                minSize: [40, 40],
+                minSize: [50, 50],
                 maxSize: [0, 0],
                 width: 0,
                 maxAreas: 0,
@@ -752,13 +817,17 @@
                 overlayOpacity: 0,
                 areas: [],
                 onChanging: null,
-                onChanged: null
+                onChanged: null,
+                settingTexts: ['Delete', 'Delete Frame']
             };
 
         this.options = $.extend(defaultOptions, customOptions);
 
         if (!this.options.allowEdit) {
-            this.options.allowSelect = this.options.allowMove = this.options.allowResize = this.options.allowDelete = false;
+            this.options.allowSelect =
+                this.options.allowMove =
+                this.options.allowResize =
+                this.options.allowSettings = false;
         }
 
         this._areas = {};
@@ -767,7 +836,9 @@
         this.$image = $(object);
 
         this.ratio = 1;
-        if (this.options.width && this.$image.width() && this.options.width !== this.$image.width()) {
+        if (
+            this.options.width && this.$image.width() && this.options.width !== this.$image.width()
+        ) {
             this.ratio = this.options.width / this.$image.width();
             this.$image.width(this.options.width);
         }
@@ -797,7 +868,7 @@
             });
 
         // Initialize an overlay layer and place it above the image
-        this.$overlay = $("<div class=\"select-areas-overlay\" />")
+        this.$overlay = $("<div class='select-areas-overlay' />")
             .css({
                 opacity : this.options.overlayOpacity,
                 position : "absolute",
@@ -817,7 +888,7 @@
             })
             .insertAfter(this.$overlay);
 
-        $.each(this.options.areas, function (key, area) {
+        $.each(this.options.areas, function(key, area) {
             that._add(area, true);
         });
 
@@ -833,7 +904,7 @@
                 .on("touchstart", $.proxy(this.newArea, this));
         }
         if (this.options.allowNudge) {
-            $("html").keydown(function (e) { // move selection with arrow keys
+            $("html").keydown(function(e) { // move selection with arrow keys
                 var codes = {
                         37: "l",
                         38: "u",
@@ -844,7 +915,7 @@
                     selectedArea;
 
                 if (direction) {
-                    that._eachArea(function (area) {
+                    that._eachArea(function(area) {
                         if (area.getData().z === 100) {
                             selectedArea = area;
                             return false;
@@ -860,7 +931,7 @@
         }
     };
 
-    $.BBDMarkerImage.prototype._refresh = function () {
+    $.BBDMarkerImage.prototype._refresh = function() {
         var nbAreas = this.areas().length;
         this.$overlay.css({
             display : nbAreas? "block" : "none"
@@ -870,32 +941,32 @@
         });
     };
 
-    $.BBDMarkerImage.prototype._eachArea = function (cb) {
-        $.each(this._areas, function (id, area) {
+    $.BBDMarkerImage.prototype._eachArea = function(cb) {
+        $.each(this._areas, function(id, area) {
             if (area) {
                 return cb(area, id);
             }
         });
     };
 
-    $.BBDMarkerImage.prototype._remove = function (id) {
+    $.BBDMarkerImage.prototype._remove = function(id) {
         delete this._areas[id];
         this._refresh();
     };
 
-    $.BBDMarkerImage.prototype.remove = function (id) {
+    $.BBDMarkerImage.prototype.remove = function(id) {
         if (this._areas[id]) {
             this._areas[id].deleteSelection();
         }
     };
 
-    $.BBDMarkerImage.prototype.newArea = function (event) {
+    $.BBDMarkerImage.prototype.newArea = function(event) {
         var id = -1;
         this.blurAll();
         if (this.options.maxAreas && this.options.maxAreas <=  this.areas().length) {
             return id;
         }
-        this._eachArea(function (area, index) {
+        this._eachArea(function(area, index) {
             id = Math.max(id, parseInt(index, 10));
         });
         id += 1;
@@ -907,7 +978,7 @@
         return id;
     };
 
-    $.BBDMarkerImage.prototype.set = function (id, options, silent) {
+    $.BBDMarkerImage.prototype.set = function(id, options, silent) {
         if (this._areas[id]) {
             options.id = id;
             this._areas[id].set(options, silent);
@@ -915,36 +986,39 @@
         }
     };
 
-    $.BBDMarkerImage.prototype._add = function (options, silent) {
+    $.BBDMarkerImage.prototype._add = function(options, silent) {
         var id = this.newArea();
         this.set(id, options, silent);
     };
 
-    $.BBDMarkerImage.prototype.add = function (options) {
+    $.BBDMarkerImage.prototype.add = function(options) {
         var that = this;
         this.blurAll();
         if ($.isArray(options)) {
-            $.each(options, function (key, val) {
+            $.each(options, function(key, val) {
                 that._add(val);
             });
         } else {
             this._add(options);
         }
         this._refresh();
-        if (!this.options.allowSelect && !this.options.allowMove && !this.options.allowResize && !this.options.allowDelete) {
+        if (
+            !this.options.allowSelect && !this.options.allowMove &&
+            !this.options.allowResize && !this.options.allowSettings
+        ) {
             this.blurAll();
         }
     };
 
-    $.BBDMarkerImage.prototype.reset = function () {
+    $.BBDMarkerImage.prototype.reset = function() {
         var that = this;
-        this._eachArea(function (area, id) {
+        this._eachArea(function(area, id) {
             that.remove(id);
         });
         this._refresh();
     };
 
-    $.BBDMarkerImage.prototype.destroy = function () {
+    $.BBDMarkerImage.prototype.destroy = function() {
         this.reset();
         this.$holder.remove();
         this.$overlay.remove();
@@ -954,19 +1028,43 @@
         this.$image.off("changing changed loaded");
     };
 
-    $.BBDMarkerImage.prototype.areas = function () {
+    $.BBDMarkerImage.prototype.areas = function() {
         var ret = [];
-        this._eachArea(function (area) {
+
+        this._eachArea(function(area) {
             ret.push(area.getData());
+        });
+
+        return ret;
+    };
+
+    // External method
+    $.BBDMarkerImage.prototype.getAreas = function() {
+        var ret = [];
+        this._eachArea(function(area) {
+            var area = $.extend(true, {}, area.getData());
+
+            if (area.frameDisabled) {
+                area.dot.x += area.x;
+                area.dot.y += area.y;
+
+                delete area.x;
+                delete area.y;
+                delete area.width;
+                delete area.height;
+                delete area.frameDisabled;
+            }
+
+            ret.push(area);
         });
         return ret;
     };
 
-    $.BBDMarkerImage.prototype.relativeAreas = function () {
+    $.BBDMarkerImage.prototype.relativeAreas = function() {
         var areas = this.areas(),
             ret = [],
             ratio = this.ratio,
-            scale = function (val) {
+            scale = function(val) {
                 return Math.floor(val / ratio);
             };
 
@@ -980,15 +1078,37 @@
         return ret;
     };
 
-    $.BBDMarkerImage.prototype.blurAll = function () {
-        this._eachArea(function (area) {
+    // External method
+    $.BBDMarkerImage.prototype.getRelativeAreas = function() {
+        var areas = this.getAreas(),
+            ret = [],
+            ratio = this.ratio,
+            scale = function(val) {
+                return Math.floor(val / ratio);
+            };
+
+        for (var i = 0; i < areas.length; i++) {
+            ret[i] = $.extend({}, areas[i]);
+
+            if (!ret[i].frameDisabled) {
+                ret[i].x = scale(ret[i].x);
+                ret[i].y = scale(ret[i].y);
+                ret[i].width = scale(ret[i].width);
+                ret[i].height = scale(ret[i].height);
+            }
+        }
+        return ret;
+    };
+
+    $.BBDMarkerImage.prototype.blurAll = function() {
+        this._eachArea(function(area) {
             area.blur();
         });
     };
 
-    $.BBDMarkerImage.prototype.contains  = function (point) {
+    $.BBDMarkerImage.prototype.contains  = function(point) {
         var res = false;
-        this._eachArea(function (area) {
+        this._eachArea(function(area) {
             if (area.contains(point)) {
                 res = true;
                 return false;
