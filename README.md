@@ -85,7 +85,7 @@ Here is a list of available options for BBDMarker, with their *default value*:
 - **onChanging** (*null*): triggered when the event "changing" is fired
 - **onChanged** (*null*): triggered when the event "changed" is fired
 - **onLoaded** (*null*): triggered when the event "loaded" is fired
-- **width** (*0*): When not 0, scale the image to this width (px). The coordinates of the areas on the full image can be retrieved with method relativeAreas()
+- **width** (*0*): When not 0, scale the image to this width (px). The coordinates of the areas on the full image can be retrieved with method getRelativeAreas()
 - **settingTexts** (*['Delete', 'Delete Frame']*): Texts for settings menu
 
 ## Events
@@ -97,8 +97,8 @@ Three events are fired by the plugin:
 ## Methods
 Once you added a *BBDMarker* plugin on an image, several method are exposed to help you
 manipulate and retrieve these areas:
-- **areas ()** : returns an array of areas
-- **relativeAreas ()** : returns an array of areas, with their size and coordinates on the original image (see option width). Equal to areas() when the image is displayed in full size.
+- **getAreas ()** : returns an array of areas
+- **getRelativeAreas ()** : returns an array of areas, with their size and coordinates on the original image (see option width). Equal to getAreas() when the image is displayed in full size.
 - **add (options)** : add an area
 - **remove (id)** : remove an area with its id
 - **reset ()** : remove all areas
