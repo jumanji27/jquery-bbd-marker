@@ -69,6 +69,7 @@ Here is a list of available options for BBDMarker, with their *default value*:
 
 - **allowEdit** (*true*): When set to false, unset allowMove, allowResize, allowSelect and allowDelete
 - **allowMove** (*true*): When set to false, Areas can not be moved with a drag & drop.
+- **allowFrame** (*true*): When set to false, will be only the dot.
 - **allowDot** (*true*): When set to false, Area will be without the dot.
 - **allowDotMove** (*true*): When to false, dot can not be moved.
 - **allowResize** (*true*): When set to false, Areas can not be resized.

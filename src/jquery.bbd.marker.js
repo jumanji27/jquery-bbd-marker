@@ -13,8 +13,7 @@
             selectionOffset = [0, 0],
             selectionOrigin = [0, 0],
             area = {
-                id: id,
-                dot: {}
+                id: id
             },
             blur = function() {
                 area.z = 0;
@@ -70,7 +69,7 @@
             },
             updateSelection = function(type) {
                 // Update the dot only
-                if (type === "dot") {
+                if (options.allowDot && type === "dot") {
                     $selection.children(".dot-area").css({
                         top: area.dot.y,
                         left: area.dot.x
@@ -100,10 +99,12 @@
                     "z-index": area.z + 2
                 });
 
-                $selection.children(".dot-area").css({
-                    top: area.dot.y,
-                    left: area.dot.x
-                });
+                if (options.allowDot) {
+                    $selection.children(".dot-area").css({
+                        top: area.dot.y,
+                        left: area.dot.x
+                    });
+                }
             },
             updateResizeHandlers = function(show) {
                 if (!options.allowResize) {
@@ -225,13 +226,24 @@
                 cancelEvent(event);
 
                 // Reset the selection size
-                area.width = options.minSize[0];
-                area.height = options.minSize[1];
+                if (!options.allowFrame) {
+                    deleteFrame()
+                } else {
+                    area.width = options.minSize[0];
+                    area.height = options.minSize[1];
+
+                    if (options.allowDot) {
+                        area.dot.x = area.width / 2;
+                        area.dot.y = area.height / 2;
+                    }
+                }
 
                 focus();
 
-                on("move", resizeSelection);
-                on("stop", releaseSelection);
+                if (options.allowFrame) {
+                    on("move", resizeSelection);
+                    on("stop", releaseSelection);
+                }
 
                 // Get the selection origin
                 selectionOrigin = getMousePosition(event);
@@ -244,9 +256,6 @@
                 // And set its position
                 area.x = selectionOrigin[0];
                 area.y = selectionOrigin[1];
-
-                area.dot.x = area.width / 2;
-                area.dot.y = area.height / 2;
 
                 refresh("startSelection");
             },
@@ -412,41 +421,43 @@
                     area.y = selectionOrigin[1];
                 }
 
-                if (area.dot.touched) {
-                    if (selectionOrigin[0] === area.x) {
-                        if (area.dot.x > area.width) area.dot.x = area.width;
-                    } else {
-                        diff = prevArea.width - area.width;
-
-                        if (diff > 0) {
-                            if (area.dot.x > 0) {
-                                area.dot.x = area.dot.x - diff
-                            } else {
-                                area.dot.x = 0
-                            }
+                if (options.allowDot) {
+                    if (area.dot.touched) {
+                        if (selectionOrigin[0] === area.x) {
+                            if (area.dot.x > area.width) area.dot.x = area.width;
                         } else {
-                            area.dot.x = area.dot.x - diff
-                        }
-                    }
+                            diff = prevArea.width - area.width;
 
-                    if (selectionOrigin[1] === area.y) {
-                        if (area.dot.y > area.height) area.dot.y = area.height;
-                    } else {
-                        diff = prevArea.height - area.height;
-
-                        if (diff > 0) {
-                            if (area.dot.y > 0) {
-                                area.dot.y = area.dot.y - diff
+                            if (diff > 0) {
+                                if (area.dot.x > 0) {
+                                    area.dot.x = area.dot.x - diff;
+                                } else {
+                                    area.dot.x = 0;
+                                }
                             } else {
-                                area.dot.y = 0
+                                area.dot.x = area.dot.x - diff;
                             }
-                        } else {
-                            area.dot.y = area.dot.y - diff
                         }
+
+                        if (selectionOrigin[1] === area.y) {
+                            if (area.dot.y > area.height) area.dot.y = area.height;
+                        } else {
+                            diff = prevArea.height - area.height;
+
+                            if (diff > 0) {
+                                if (area.dot.y > 0) {
+                                    area.dot.y = area.dot.y - diff;
+                                } else {
+                                    area.dot.y = 0;
+                                }
+                            } else {
+                                area.dot.y = area.dot.y - diff;
+                            }
+                        }
+                    } else {
+                        area.dot.x = area.width / 2;
+                        area.dot.y = area.height / 2;
                     }
-                } else {
-                    area.dot.x = area.width / 2;
-                    area.dot.y = area.height / 2;
                 }
 
                 fireEvent("changing");
@@ -482,7 +493,7 @@
                         x: mousePosition[0],
                         y: mousePosition[1]
                     });
-                } else {
+                } else if (options.allowDot) {
                     moveDotTo({
                         x: mousePosition[0] - area.x,
                         y: mousePosition[1] - area.y
@@ -635,6 +646,8 @@
                 return [x, y];
             };
 
+        if (options.allowDot) area.dot = {};
+
         // Initialize an outline layer and place it above the trigger layer
         $outline = $("<div class='select-areas-outline' />")
             .css({
@@ -705,17 +718,22 @@
                     .bind("tap", deleteFrame);
                 return $obj;
             };
+
+            var btnClassName = "select-areas-settings-area-disable-frame";
+
+            if (!options.allowDot) btnClassName += " disable";
+
             $btSettings
                 .append(
                     bindTodeleteFrame(
                         $(
-                            "<div class='select-areas-settings-area-disable-frame'>" +
+                            "<div class='" + btnClassName + "'>" +
                                 options.settingTexts[1] +
                             "</div>"
                         )
                     )
                 )
-                .insertAfter($selection);;
+                .insertAfter($selection);
         }
 
         // Initialize the dot
@@ -768,43 +786,44 @@
                 fireEvent("changed");
             },
             set: function(dimensions, silent) {
-                if (dimensions.dot) {
-                    $selection.children(".dot-area").css({
-                        opacity: 1
-                    });
-
-                    dimensions.dot.touched = true;
-
-                    if (dimensions.x === undefined) {
-                       $outline.remove();
-
-                        $.each($resizeHandlers, function(_, $handler) {
-                            $handler.remove();
+                if (this.options.allowDot) {
+                    if (dimensions.dot) {
+                        $selection.children(".dot-area").css({
+                            opacity: 1
                         });
 
-                        if ($btSettings) {
-                            $btSettings
-                                .children(".select-areas-settings-area-disable-frame")
-                                .addClass("disable");
-                            $btSettings.addClass("disable");
+                        dimensions.dot.touched = true;
+
+                        if (dimensions.x === undefined || !this.options.allowFrame) {
+                           $outline.remove();
+
+                            $.each($resizeHandlers, function(_, $handler) {
+                                $handler.remove();
+                            });
+
+                            if ($btSettings) {
+                                $btSettings.addClass("disable");
+                                $btSettings
+                                    .children(".select-areas-settings-area-disable-frame")
+                                    .addClass("disable");
+                            }
+
+                            dimensions.frameDisabled = true;
+                            dimensions.x = dimensions.dot.x;
+                            dimensions.y = dimensions.dot.y;
+                            dimensions.width = 0;
+                            dimensions.height = 0;
+                            dimensions.dot.x = 0;
+                            dimensions.dot.y = 0;
+                        } else {
+                            dimensions.dot.x -= dimensions.x;
+                            dimensions.dot.y -= dimensions.y;
                         }
-
-                        dimensions.frameDisabled = true;
-                        dimensions.x = dimensions.dot.x;
-                        dimensions.y = dimensions.dot.y;
-                        dimensions.width = 0;
-                        dimensions.height = 0;
-                        dimensions.dot.x = 0;
-                        dimensions.dot.y = 0;
-
                     } else {
-                        dimensions.dot.x -= dimensions.x;
-                        dimensions.dot.y -= dimensions.y;
-                    }
-                } else {
-                    dimensions.dot = {
-                        x: dimensions.width / 2,
-                        y: dimensions.height / 2
+                        dimensions.dot = {
+                            x: dimensions.width / 2,
+                            y: dimensions.height / 2
+                        }
                     }
                 }
 
@@ -835,6 +854,7 @@
                 allowSelect: true,
                 allowSettings: true,
                 allowDot: true,
+                allowFrame: true,
                 allowNudge: true,
                 aspectRatio: 0,
                 minSize: [50, 50],
@@ -844,9 +864,9 @@
                 outlineOpacity: 1,
                 overlayOpacity: 0,
                 areas: [],
+                settingTexts: ["Delete", "Delete Frame"],
                 onChanging: null,
-                onChanged: null,
-                settingTexts: ['Delete', 'Delete Frame']
+                onChanged: null
             };
 
         this.options = $.extend(defaultOptions, customOptions);
@@ -990,7 +1010,7 @@
     $.BBDMarkerImage.prototype.newArea = function(event) {
         var id = -1;
         this.blurAll();
-        if (this.options.maxAreas && this.options.maxAreas <=  this.areas().length) {
+        if (this.options.maxAreas && this.options.maxAreas <= this.areas().length) {
             return id;
         }
         this._eachArea(function(area, index) {
@@ -1071,8 +1091,10 @@
         this._eachArea(function(area) {
             var area = $.extend(true, {}, area.getData());
 
-            area.dot.x += area.x;
-            area.dot.y += area.y;
+            if (area.dot) {
+                area.dot.x += area.x;
+                area.dot.y += area.y;
+            }
 
             if (area.frameDisabled) {
                 delete area.x;
@@ -1101,7 +1123,13 @@
             ret[i].y = scale(ret[i].y);
             ret[i].width = scale(ret[i].width);
             ret[i].height = scale(ret[i].height);
+
+            if (ret[i].dot) {
+                ret[i].dot.x = scale(ret[i].dot.x);
+                ret[i].dot.y = scale(ret[i].dot.y);
+            }
         }
+
         return ret;
     };
 
@@ -1117,11 +1145,13 @@
         for (var i = 0; i < areas.length; i++) {
             ret[i] = $.extend({}, areas[i]);
 
-            ret[i].dot.x += ret[i].x;
-            ret[i].dot.y += ret[i].y;
+            if (ret[i].dot) {
+                ret[i].dot.x += ret[i].x;
+                ret[i].dot.y += ret[i].y;
 
-            ret[i].dot.x = scale(ret[i].x);
-            ret[i].dot.y = scale(ret[i].y);
+                ret[i].dot.x = scale(ret[i].x);
+                ret[i].dot.y = scale(ret[i].y);
+            }
 
             if (ret[i].frameDisabled) {
                 delete ret[i].x;

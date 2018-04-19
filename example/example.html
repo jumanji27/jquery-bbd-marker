@@ -79,11 +79,13 @@
 			var selectionExists;
 
 			function areaToString (area) {
-				if (!area.x) {
+				if ((area.x || area.x === 0) && area.dot) {
+					return (typeof area.id === "undefined" ? "" : (area.id + ": ")) + area.x + ":" + area.y  + " " + area.width + "x" + area.height + " " + area.dot.x + ":" + area.dot.y + "<br />"
+				} else if (area.x || area.x === 0) {
+					return (typeof area.id === "undefined" ? "" : (area.id + ": ")) + area.x + ":" + area.y  + " " + area.width + "x" + area.height + "<br />"
+				} else if (area.dot) {
 					return (typeof area.id === "undefined" ? "" : (area.id + ": ")) + area.dot.x + ":" + area.dot.y + "<br />"
 				}
-
-				return (typeof area.id === "undefined" ? "" : (area.id + ": ")) + area.x + ":" + area.y  + " " + area.width + "x" + area.height + " " + area.dot.x + ":" + area.dot.y + "<br />"
 			}
 
 			function output (text) {
