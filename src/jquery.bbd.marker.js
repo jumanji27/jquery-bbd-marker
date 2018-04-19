@@ -769,6 +769,12 @@
             },
             set: function(dimensions, silent) {
                 if (dimensions.dot) {
+                    if (!dimensions.x) {
+                        dimensions.x = 0;
+                        dimensions.y = 0;
+                        dimensions.width = 0;
+                        dimensions.height = 0;
+                    }
 
                     $selection.children(".dot-area").css({
                         opacity: 1
@@ -896,7 +902,6 @@
         $.each(this.options.areas, function(key, area) {
             that._add(area, true);
         });
-
 
         this.blurAll();
         this._refresh();
