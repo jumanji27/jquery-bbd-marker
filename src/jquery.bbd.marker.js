@@ -769,21 +769,38 @@
             },
             set: function(dimensions, silent) {
                 if (dimensions.dot) {
-                    if (!dimensions.x) {
-                        dimensions.x = 0;
-                        dimensions.y = 0;
-                        dimensions.width = 0;
-                        dimensions.height = 0;
-                    }
-
                     $selection.children(".dot-area").css({
                         opacity: 1
                     });
 
                     dimensions.dot.touched = true;
 
-                    dimensions.dot.x = dimensions.dot.x - dimensions.x;
-                    dimensions.dot.y = dimensions.dot.y - dimensions.y;
+                    if (dimensions.x === undefined) {
+                       $outline.remove();
+
+                        $.each($resizeHandlers, function(_, $handler) {
+                            $handler.remove();
+                        });
+
+                        if ($btSettings) {
+                            $btSettings
+                                .children(".select-areas-settings-area-disable-frame")
+                                .addClass("disable");
+                            $btSettings.addClass("disable");
+                        }
+
+                        dimensions.frameDisabled = true;
+                        dimensions.x = dimensions.dot.x;
+                        dimensions.y = dimensions.dot.y;
+                        dimensions.width = 0;
+                        dimensions.height = 0;
+                        dimensions.dot.x = 0;
+                        dimensions.dot.y = 0;
+
+                    } else {
+                        dimensions.dot.x -= dimensions.x;
+                        dimensions.dot.y -= dimensions.y;
+                    }
                 } else {
                     dimensions.dot = {
                         x: dimensions.width / 2,
@@ -792,6 +809,8 @@
                 }
 
                 area = $.extend(area, dimensions);
+
+                console.log(area);
 
                 selectionOrigin[0] = area.x;
                 selectionOrigin[1] = area.y;
