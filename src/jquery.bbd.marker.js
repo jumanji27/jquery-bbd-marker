@@ -1044,10 +1044,10 @@
         this._eachArea(function(area) {
             var area = $.extend(true, {}, area.getData());
 
-            if (area.frameDisabled) {
-                area.dot.x += area.x;
-                area.dot.y += area.y;
+            area.dot.x += area.x;
+            area.dot.y += area.y;
 
+            if (area.frameDisabled) {
                 delete area.x;
                 delete area.y;
                 delete area.width;
@@ -1090,7 +1090,18 @@
         for (var i = 0; i < areas.length; i++) {
             ret[i] = $.extend({}, areas[i]);
 
-            if (!ret[i].frameDisabled) {
+            ret[i].dot.x += ret[i].x;
+            ret[i].dot.y += ret[i].y;
+
+            ret[i].dot.x = scale(ret[i].x);
+            ret[i].dot.y = scale(ret[i].y);
+
+            if (ret[i].frameDisabled) {
+                delete ret[i].x;
+                delete ret[i].y;
+                delete ret[i].width;
+                delete ret[i].height;
+            } else {
                 ret[i].x = scale(ret[i].x);
                 ret[i].y = scale(ret[i].y);
                 ret[i].width = scale(ret[i].width);
