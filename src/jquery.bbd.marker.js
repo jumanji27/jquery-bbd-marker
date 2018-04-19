@@ -602,6 +602,7 @@
 
                 area.frameDisabled = true;
 
+                fireEvent("changed");
                 refresh();
             },
             getElementOffset = function(object) {
@@ -768,11 +769,15 @@
             },
             set: function(dimensions, silent) {
                 if (dimensions.dot) {
-                    dimensions.dot.touched = true;
 
                     $selection.children(".dot-area").css({
                         opacity: 1
                     });
+
+                    dimensions.dot.touched = true;
+
+                    dimensions.dot.x = dimensions.dot.x - dimensions.x;
+                    dimensions.dot.y = dimensions.dot.y - dimensions.y;
                 } else {
                     dimensions.dot = {
                         x: dimensions.width / 2,
