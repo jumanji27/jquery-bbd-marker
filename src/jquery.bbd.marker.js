@@ -810,8 +810,6 @@
 
                 area = $.extend(area, dimensions);
 
-                console.log(area);
-
                 selectionOrigin[0] = area.x;
                 selectionOrigin[1] = area.y;
 
