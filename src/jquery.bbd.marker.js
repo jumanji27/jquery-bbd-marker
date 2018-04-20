@@ -99,6 +99,20 @@
                     "z-index": area.z + 2
                 });
 
+                 // Update delete button
+                 CONSTRAINT = 20
+
+                 if (area.y < CONSTRAINT || $image.width() - (area.x + area.width) < CONSTRAINT) {
+                     $btSettings.children(".select-areas-settings-icon-area").css({
+                         color: "#000"
+                     });
+                 } else {
+                     $btSettings.children(".select-areas-settings-icon-area").css({
+                         color: "#fff"
+                     });
+                 }
+
+                // Update the dot
                 if (options.allowDot) {
                     $selection.children(".dot-area").css({
                         top: area.dot.y,
